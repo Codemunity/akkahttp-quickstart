@@ -14,4 +14,19 @@ object Main extends App {
   implicit val materializer: ActorMaterializer = ActorMaterializer()
   import system.dispatcher
 
+  import akka.http.scaladsl.server.Directives._
+  def route = path("hello") {
+    get {
+      complete("Hello, World!")
+    }
+  }
+
+  val binding = Http().bindAndHandle(route, host, port)
+  binding.onComplete {
+    case Success(_) => println("Success!")
+    case Failure(error) => println(s"Failed: ${error.getMessage}")
+  }
+
+  import scala.concurrent.duration._
+  Await.result(binding, 3.seconds)
 }
