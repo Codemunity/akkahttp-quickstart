@@ -1,5 +1,4 @@
 import akka.actor.ActorSystem
-import akka.http.scaladsl.Http
 import akka.stream.ActorMaterializer
 
 import scala.concurrent.Await
@@ -14,14 +13,14 @@ object Main extends App {
   implicit val materializer: ActorMaterializer = ActorMaterializer()
   import system.dispatcher
 
-  import akka.http.scaladsl.server.Directives._
-  def route = path("hello") {
-    get {
-      complete("Hello, World!")
-    }
-  }
+  val todoRepository = new InMemoryTodoRepository(Seq(
+    Todo("1", "Buy eggs", "Ran out of eggs, buy a dozen", false),
+    Todo("2", "Buy milk", "The cat is thirsty!", true),
+  ))
+  val router = new TodoRouter(todoRepository)
+  val server = new Server(router, host, port)
 
-  val binding = Http().bindAndHandle(route, host, port)
+  val binding = server.bind()
   binding.onComplete {
     case Success(_) => println("Success!")
     case Failure(error) => println(s"Failed: ${error.getMessage}")
