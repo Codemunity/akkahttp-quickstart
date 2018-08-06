@@ -1,4 +1,7 @@
+import akka.http.scaladsl.model.StatusCodes
 import akka.http.scaladsl.server.{Directives, Route}
+
+import scala.util.{Failure, Success}
 
 trait Router {
   def route: Route
@@ -11,7 +14,13 @@ class TodoRouter(todoRepository: TodoRepository) extends Router with Directives 
   override def route: Route = pathPrefix("todos") {
     pathEndOrSingleSlash {
       get {
-        complete(todoRepository.all())
+        onComplete(todoRepository.all()) {
+          case Success(todos) =>
+            complete(todos)
+          case Failure(exception) =>
+            println(exception.getMessage)
+            complete(StatusCodes.InternalServerError)
+        }
       }
     } ~ path("done") {
       get {
