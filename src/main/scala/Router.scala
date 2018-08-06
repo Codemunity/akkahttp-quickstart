@@ -19,7 +19,7 @@ class TodoRouter(todoRepository: TodoRepository) extends Router with Directives 
             complete(todos)
           case Failure(exception) =>
             println(exception.getMessage)
-            complete(StatusCodes.InternalServerError)
+            complete(ApiError.generic.statusCode, ApiError.generic.message)
         }
       }
     } ~ path("done") {
