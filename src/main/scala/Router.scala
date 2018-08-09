@@ -17,11 +17,15 @@ class TodoRouter(todoRepository: TodoRepository) extends Router with Directives 
       }
     } ~ path("done") {
       get {
-        complete(todoRepository.done())
+        handleWithDefault(todoRepository.done()) { todos =>
+          complete(todos)
+        }
       }
     } ~ path("pending") {
       get {
-        complete(todoRepository.pending())
+        handleWithDefault(todoRepository.pending()) { todos =>
+          complete(todos)
+        }
       }
     }
   }
