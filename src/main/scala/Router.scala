@@ -27,9 +27,9 @@ class TodoRouter(todoRepository: TodoRepository) extends Router with Directives 
         complete(todoRepository.done())
       }
     } ~ path("pending") {
-    get {
-      complete(todoRepository.pending())
+      get {
+        complete(todoRepository.pending())
+      }
     }
-  }
   }
 }
