@@ -11,7 +11,7 @@ class TodoRouter(todoRepository: TodoRepository) extends Router with Directives 
   override def route: Route = pathPrefix("todos") {
     pathEndOrSingleSlash {
       get {
-        handleWithDefault(todoRepository.done()) { todos =>
+        handleWithDefault(todoRepository.all()) { todos =>
           complete(todos)
         }
       }
