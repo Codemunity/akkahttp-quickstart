@@ -11,19 +11,19 @@ class TodoRouter(todoRepository: TodoRepository) extends Router with Directives 
   override def route: Route = pathPrefix("todos") {
     pathEndOrSingleSlash {
       get {
-        handleWithDefault(todoRepository.all()) { todos =>
+        handleWithGeneric(todoRepository.all()) { todos =>
           complete(todos)
         }
       }
     } ~ path("done") {
       get {
-        handleWithDefault(todoRepository.done()) { todos =>
+        handleWithGeneric(todoRepository.done()) { todos =>
           complete(todos)
         }
       }
     } ~ path("pending") {
       get {
-        handleWithDefault(todoRepository.pending()) { todos =>
+        handleWithGeneric(todoRepository.pending()) { todos =>
           complete(todos)
         }
       }
