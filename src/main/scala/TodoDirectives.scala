@@ -8,7 +8,7 @@ trait TodoDirectives extends Directives {
   import io.circe.generic.auto._
 
   def handle[T]
-  (f: => Future[T])
+  (f: Future[T])
   (e: Throwable => ApiError): Directive1[T] = onComplete(f) flatMap {
     case Success(t) =>
       provide(t)
@@ -17,7 +17,7 @@ trait TodoDirectives extends Directives {
       complete(apiError.statusCode, apiError.message)
   }
 
-  def handleWithDefault[T](f: => Future[T]): Directive1[T] =
+  def handleWithDefault[T](f: Future[T]): Directive1[T] =
     handle[T](f)(_ => ApiError.generic)
 
 }
