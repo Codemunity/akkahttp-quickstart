@@ -12,13 +12,15 @@ class TodoDirectivesSpec extends WordSpec with Matchers with ScalatestRouteTest 
   private val testRoute = pathPrefix("test") {
     path("success") {
       get {
-        handleWithDefault(Future.unit) { _ =>
+        handleWithGeneric(Future.unit) { _ =>
           complete(StatusCodes.OK)
         }
       }
     } ~ path("failure") {
-      handleWithDefault(Future.failed(new Exception("Failure!"))) { _ =>
-        complete(StatusCodes.OK)
+      get {
+        handleWithGeneric(Future.failed(new Exception("Failure!"))) { _ =>
+          complete(StatusCodes.OK)
+        }
       }
     }
   }
