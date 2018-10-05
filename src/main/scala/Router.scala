@@ -14,6 +14,17 @@ class TodoRouter(todoRepository: TodoRepository) extends Router with Directives 
         handleWithGeneric(todoRepository.all()) { todos =>
           complete(todos)
         }
+      } ~ post {
+        entity(as[CreateTodo]) { createTodo =>
+          TodoValidator.validate(createTodo) match {
+            case Some(apiError) =>
+              complete(apiError.statusCode, apiError.message)
+            case None =>
+              handleWithGeneric(todoRepository.save(createTodo)) { todos =>
+                complete(todos)
+              }
+          }
+        }
       }
     } ~ path("done") {
       get {
