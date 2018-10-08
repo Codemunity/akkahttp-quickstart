@@ -8,5 +8,12 @@ object CreateTodoValidator extends Validator[CreateTodo] {
     if (createTodo.title.isEmpty) Some(ApiError.emptyTitleField)
     else None
   }
+}
 
+object UpdateTodoValidator extends Validator[UpdateTodo] {
+
+  def validate(updateTodo: UpdateTodo): Option[ApiError] = {
+    // TODO: implement
+    None
+  }
 }

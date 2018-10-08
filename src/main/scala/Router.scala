@@ -1,3 +1,5 @@
+import scala.util.{Failure, Success}
+
 import akka.http.scaladsl.server.{Directives, Route}
 
 trait Router {
@@ -19,6 +21,21 @@ class TodoRouter(todoRepository: TodoRepository) extends Router with Directives 
           validateWith(CreateTodoValidator)(createTodo) {
             handleWithGeneric(todoRepository.save(createTodo)) { todos =>
               complete(todos)
+            }
+          }
+        }
+      }
+    } ~ path(Segment) { id: String =>
+      put {
+        entity(as[UpdateTodo]) { updateTodo =>
+          validateWith(UpdateTodoValidator)(updateTodo) {
+            handle(todoRepository.update(id, updateTodo)) {
+              case TodoRepository.TodoNotFound(_) =>
+                ApiError.todoNotFound(id)
+              case _ =>
+                ApiError.generic
+            } { todo =>
+              complete(todo)
             }
           }
         }
