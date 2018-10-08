@@ -4,7 +4,7 @@ trait Router {
   def route: Route
 }
 
-class TodoRouter(todoRepository: TodoRepository) extends Router with Directives with TodoDirectives {
+class TodoRouter(todoRepository: TodoRepository) extends Router with Directives with TodoDirectives with ValidatorDirectives {
   import de.heikoseeberger.akkahttpcirce.FailFastCirceSupport._
   import io.circe.generic.auto._
 
@@ -16,13 +16,10 @@ class TodoRouter(todoRepository: TodoRepository) extends Router with Directives 
         }
       } ~ post {
         entity(as[CreateTodo]) { createTodo =>
-          TodoValidator.validate(createTodo) match {
-            case Some(apiError) =>
-              complete(apiError.statusCode, apiError.message)
-            case None =>
-              handleWithGeneric(todoRepository.save(createTodo)) { todos =>
-                complete(todos)
-              }
+          validateWith(CreateTodoValidator)(createTodo) {
+            handleWithGeneric(todoRepository.save(createTodo)) { todos =>
+              complete(todos)
+            }
           }
         }
       }
