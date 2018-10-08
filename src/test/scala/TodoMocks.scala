@@ -8,6 +8,8 @@ trait TodoMocks {
     override def done(): Future[Seq[Todo]] = Future.failed(new Exception("Mocked exception"))
 
     override def pending(): Future[Seq[Todo]] = Future.failed(new Exception("Mocked exception"))
+
+    override def save(createTodo: CreateTodo): Future[Todo] = Future.failed(new Exception("Mocked exception"))
   }
 
 }
