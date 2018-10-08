@@ -47,7 +47,16 @@ class TodoRouterUpdateSpec extends WordSpec with Matchers with ScalatestRouteTes
       }
     }
 
-    // TODO: test for validation
+    "not update a todo with invalid data" in {
+      val repository = new InMemoryTodoRepository(Seq(testTodo))
+      val router = new TodoRouter(repository)
+
+      Put(s"/todos/$todoId", testUpdateTodo.copy(title = Some(""))) ~> router.route ~> check {
+        status shouldBe ApiError.emptyTitleField.statusCode
+        val resp = responseAs[String]
+        resp shouldBe ApiError.emptyTitleField.message
+      }
+    }
 
     "handle repository failure when updating todos" in {
       val repository = new FailingRepository
