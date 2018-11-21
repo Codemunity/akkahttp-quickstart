@@ -1,8 +1,11 @@
+
+import com.typesafe.sbt.packager.docker.{Cmd, ExecCmd}
+
 enablePlugins(JavaAppPackaging, AshScriptPlugin)
 
 name := "akkahttp-quickstart"
 
-version := "0.1"
+version := "0.0.7"
 
 scalaVersion := "2.12.6"
 
@@ -28,3 +31,11 @@ libraryDependencies ++= Seq(
 
   "org.scalatest" %% "scalatest" % "3.0.5" % Test
 )
+
+dockerCommands := dockerCommands.value.map {
+  case ExecCmd("CMD", _ @ _*) =>
+    ExecCmd("CMD", "/opt/docker/bin/akkahttp-quickstart")
+  case other =>
+    other
+}
+

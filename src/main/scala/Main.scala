@@ -1,13 +1,12 @@
 import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
-
 import scala.concurrent.Await
-import scala.util.{Failure, Success}
+import scala.util.{Failure, Success, Try}
 
 object Main extends App {
 
   val host = "0.0.0.0"
-  val port = 9000
+  val port = Try(System.getenv("PORT")).map(_.toInt).getOrElse(9000)
 
   implicit val system: ActorSystem = ActorSystem(name = "todoapi")
   implicit val materializer: ActorMaterializer = ActorMaterializer()
@@ -16,6 +15,7 @@ object Main extends App {
   val todoRepository = new InMemoryTodoRepository(Seq(
     Todo("1", "Buy eggs", "Ran out of eggs, buy a dozen", false),
     Todo("2", "Buy milk", "The cat is thirsty!", true),
+    Todo("3", "Buy rice", "I'm starving!", true),
   ))
   val router = new TodoRouter(todoRepository)
   val server = new Server(router, host, port)
