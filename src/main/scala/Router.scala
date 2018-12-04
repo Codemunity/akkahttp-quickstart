@@ -1,5 +1,3 @@
-import scala.util.{Failure, Success}
-
 import akka.http.scaladsl.server.{Directives, Route}
 
 trait Router {

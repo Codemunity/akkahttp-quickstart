@@ -1,11 +1,11 @@
 
-import com.typesafe.sbt.packager.docker.{Cmd, ExecCmd}
+import com.typesafe.sbt.packager.docker.ExecCmd
 
 enablePlugins(JavaAppPackaging, AshScriptPlugin)
 
 name := "akkahttp-quickstart"
 
-version := "0.0.7"
+version := "0.1"
 
 scalaVersion := "2.12.6"
 
