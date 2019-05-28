@@ -1,24 +1,32 @@
+#!/bin/bash
+
+# Exit the script early if a command returns a non-zero exit code
+set -euo pipefail
+
+if [[ $# -ne 3 ]]; then
+    echo "Usage: $0 <app_name> <image> <auth_token>"
+    exit 1
+fi
+
 # For more information: https://devcenter.heroku.com/articles/container-registry-and-runtime
 
-APP_NAME=$1
-TAG=$2
+readonly APP_NAME=$1
+readonly IMAGE=$2
+readonly AUTH_TOKEN=$3
 
-echo "Deploying $TAG to $APP_NAME"
+echo "Deploying $IMAGE to $APP_NAME"
 
 # Login to Docker registry
-docker login --username=_ --password-stdin registry.heroku.com
-
-# Create local Docker image
-sbt docker:publishLocal
+docker login -u=_ -p=$AUTH_TOKEN registry.heroku.com
 
 # Create Heroku tag
-docker tag akkahttp-quickstart:$TAG registry.heroku.com/$APP_NAME/web
+docker tag $IMAGE registry.heroku.com/$APP_NAME/web
 
 # Push Heroku tag
 docker push registry.heroku.com/$APP_NAME/web
 
 # Release
-curl -n -X PATCH https://api.heroku.com/apps/$APP_NAME/formation \
+curl -f -n -X PATCH -H "Authorization: Bearer $AUTH_TOKEN" https://api.heroku.com/apps/$APP_NAME/formation \
   -d '{
   "updates": [
     {

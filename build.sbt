@@ -38,4 +38,3 @@ dockerCommands := dockerCommands.value.map {
   case other =>
     other
 }
-
