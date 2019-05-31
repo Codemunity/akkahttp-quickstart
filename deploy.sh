@@ -1,23 +1,19 @@
 #!/bin/bash
 
 # Exit the script early if a command returns a non-zero exit code
-set -euo pipefail
-
-if [[ $# -ne 3 ]]; then
-    echo "Usage: $0 <app_name> <image> <auth_token>"
-    exit 1
-fi
+set -e
 
 # For more information: https://devcenter.heroku.com/articles/container-registry-and-runtime
 
+# Grab the params
 readonly APP_NAME=$1
 readonly IMAGE=$2
-readonly AUTH_TOKEN=$3
+readonly HEROKU_API_KEY=$3
 
 echo "Deploying $IMAGE to $APP_NAME"
 
 # Login to Docker registry
-docker login -u=_ -p=$AUTH_TOKEN registry.heroku.com
+docker login --username=_ --password=$HEROKU_API_KEY registry.heroku.com
 
 # Create Heroku tag
 docker tag $IMAGE registry.heroku.com/$APP_NAME/web
@@ -26,7 +22,7 @@ docker tag $IMAGE registry.heroku.com/$APP_NAME/web
 docker push registry.heroku.com/$APP_NAME/web
 
 # Release
-curl -f -n -X PATCH -H "Authorization: Bearer $AUTH_TOKEN" https://api.heroku.com/apps/$APP_NAME/formation \
+curl -f -n -X PATCH -H "Authorization: Bearer $HEROKU_API_KEY" https://api.heroku.com/apps/$APP_NAME/formation \
   -d '{
   "updates": [
     {
@@ -37,4 +33,3 @@ curl -f -n -X PATCH -H "Authorization: Bearer $AUTH_TOKEN" https://api.heroku.co
 }' \
   -H "Content-Type: application/json" \
   -H "Accept: application/vnd.heroku+json; version=3.docker-releases"
-
